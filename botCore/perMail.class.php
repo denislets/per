@@ -6,34 +6,49 @@ class perMail extends perUtils {
 
 		$wb = new cUrlClass;
 		$raw_page = $wb->goToPage('lightning/mail/battle');
+		$wb->close();
 
 		$html->load($raw_page);
 
-		$ajaxUpdate = '';
-		if (strstr($raw_page, "ajaxUpdate")) {
-			$temp = substr($raw_page, strpos($raw_page, "ajaxUpdate':['") + 14);
-			$temp = substr($temp, 0, strpos($temp, "']"));
-			$ajaxUpdate = $temp;
+		$items = '';
+		$items.= $html->find('div[class=mail-list] > div[class=items]', 0)->innertext;
+		$page = 1;
+		$next = (bool)$html->find('a[class=nm-more]', 0)->innertext;
+
+		if (BOT_DEBUG) {
+			file_put_contents('mail_page_'.$page.'.html', $raw_page);
 		}
 
-		$res['items'] = $html->find('div[class=mail-list] > div[class=items]', 0)->innertext;
+		while ($next) {
+			$page++;
+			$wb = new cUrlClass;
 
-/*
-		$page=1;
-		if ($ajaxUpdate != '') {
-			while (true) {
-				$page++;
-				$wb = new cUrlClass;
-				$raw_page = $wb->goToPage("lightning/mail/battle/ajax/{$ajaxUpdate}/Mail_page/{$page}?ajax={$ajaxUpdate}");
-				$html->load($raw_page);
-				array_push($res['items'], $html->find('div[class=mail-list] > div[class=items]', 0)->innertext);
-				if (!$html->find('a[class=nm-more]', 0)->innertext) {
-					break;
-				}
+			usleep(1000000); // sleep for 1 sec.
+
+			$raw_page = $wb->goToPage("lightning/mail/battle/Mail_page/{$page}");
+			$wb->close();
+
+			if (BOT_DEBUG) {
+				file_put_contents('mail_page_'.$page.'.html', $raw_page);
+			}
+
+			$html->load($raw_page);
+			$items.= $html->find('div[class=mail-list] > div[class=items]', 0)->innertext;
+
+			$next = (bool)@$html->find('a[class=nm-more]', 0)->innertext;
+		}
+
+		$links = pc_link_extractor($items);
+		$battles = array();
+		foreach ($links as $link) {
+			if (strstr($link[0], 'world/battle/log')) {
+				$battle_url = substr($link[0], 1);
+				$battles[] = $battle_url;
 			}
 		}
-*/
+		
+		$res['items'] = $battles;
 
-		return $res;
+		return $battles;
 	}
 }

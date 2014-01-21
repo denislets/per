@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if (!function_exists('json_encode_utf8')) {
     function json_encode_utf8($value) {
         if (is_int($value)) {

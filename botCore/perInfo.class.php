@@ -16,6 +16,8 @@ class perInfo extends perUtils {
 		$res['peacocks'] = $html->find('b[class=g-peacocks]', 0)->innertext;
 		$res['cookies'] = $html->find('b[class=g-cookies]', 0)->innertext;
 
+		$wb->close();
+
 		return $res;
 	}
 }
