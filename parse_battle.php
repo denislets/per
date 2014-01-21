@@ -15,7 +15,7 @@ $player2 = array();
 $wb = new cUrlClass;
 $params = @$_GET['url'];
 if ($params == '') { 
-	$params = 'world/battle/log/id/397716/r/6ace9a89491df9be4530a11a0b86dfe4';
+	$params = 'world/battle/log/id/411906/r/09996566e4c0c56bf82216f52857fb61';
 }
 $raw_page = $wb->goToPage($params);
 
@@ -24,6 +24,7 @@ $stats_html = new simple_html_dom;
 
 $info1 = strip_tags($html->find('div[class=battle-pl] > a[class=ch-link]', 0)->innertext);
 $info2 = strip_tags($html->find('div[class=battle-pl] > a[class=ch-link]', 1)->innertext);
+$winner = strip_tags($html->find('div[class=battle-result] > a[class=ch-link]', 0)->innertext);
 
 $player1['name'] = substr($info1, 0, -1);
 $player1['level'] = intval(substr($info1, -1));
@@ -58,9 +59,23 @@ $num = 0;
 
 for ($num = 0; $num < 8; $num++) {
 	$round_text = $html->find('div[class=log-round]', $num);
-	$temp=substr($round_text, strpos($round_text, 'showQ(\'Шансы\',\'')+20);
-	$temp=substr($temp, 0, strpos($temp, '\',\'none\''));
-	$round[$num+1]['chances'] = $temp;
+	$chances_text = substr($round_text, strpos($round_text, 'showQ(\'Шансы\',\'')+20);
+	$chances_text = substr($chances_text, 0, strpos($chances_text, '\',\'none\''));
+	$chances_text = str_replace('<br />', '|', $chances_text);
+	$chances_text = str_replace('<hr />', '|', $chances_text);
+	$chances_text = strip_tags($chances_text);
+	$chances_text = str_replace('Шанс уворота: ', '', $chances_text);
+	$chances_text = str_replace('Шанс критического удара: ', '', $chances_text);
+	$chances_text = str_replace('Заблокированный урон: ', '', $chances_text);
+	$chances_text = str_replace('%', '', $chances_text);
+	$chances = explode('|', $chances_text);
+	//$round[$num+1]['chances_text'] = $chances_text;
+	$round[$num+1]['chances_1']['evade_percent'] = $chances[1];
+	$round[$num+1]['chances_1']['crit_percent'] = $chances[2];
+	$round[$num+1]['chances_1']['block_percent'] = $chances[3];
+	$round[$num+1]['chances_2']['evade_percent'] = $chances[5];
+	$round[$num+1]['chances_2']['crit_percent'] = $chances[6];
+	$round[$num+1]['chances_2']['block_percent'] = $chances[7];
 
 	for ($p = 1; $p <= 2; $p++) {
 		$round_text = $html->find("div[class=log-round] > div[class=log-f{$p}]", $num)->innertext;
@@ -71,14 +86,42 @@ for ($num = 0; $num < 8; $num++) {
 		$round_text = str_replace(chr(13), "", $round_text);
 		$round_text = str_replace(chr(10), "", $round_text);
 		$round_text = trim(strip_tags($round_text));
+		$round_text = str_replace("- ", "-", $round_text);
 		while ($round_text != str_replace("  ", " ", $round_text)) $round_text = str_replace("  ", " ", $round_text);
-		$round[$num+1][$p] = $round_text;
+		$action = explode('|', $round_text);
+		$attacker_text = trim($action[0]); // нанес 37 урона|пытался атаковать|нанес крит на 70 урона
+		$defender_text = trim($action[1]); // заблокировал 4|увернулся
+		$round[$num+1]['f'.$p]['hit_damage'] = 0;
+		$round[$num+1]['f'.$p]['blocked'] = 0;
+		$round[$num+1]['f'.$p]['is_evaded'] = 0;
+		$round[$num+1]['f'.$p]['is_crit'] = 0;
+		if (strstr($attacker_text, "пытал")) {
+			$round[$num+1]['f'.$p]['is_evaded'] = 1;
+		}
+		if (strstr($attacker_text, "крит")) {
+			$round[$num+1]['f'.$p]['is_crit'] = 1;
+		}
+		$attacker_arr = explode(' ', $attacker_text);
+		$defender_arr = explode(' ', $defender_text);
+		if (sizeof($attacker_arr) == 3) {
+			$round[$num+1]['f'.$p]['hit_damage'] = $attacker_arr[1];
+		}
+		else
+		if (sizeof($attacker_arr) == 5) {
+			$round[$num+1]['f'.$p]['hit_damage'] = intval($attacker_arr[3]);
+		}
+		if (sizeof($defender_arr) == 2) {
+			$round[$num+1]['f'.$p]['blocked'] = intval($defender_arr[1]);
+		}
+		$round[$num+1]['f'.$p]['total_damage'] = intval(trim($action[2]));
+		//$round[$num+1][$p] = $round_text;
 	}
 }
 
 $info = array(
 	'player1' => $player1,
 	'player2' => $player2,
+	'winner' => $winner,
 	'log' => $round,
 );
 
