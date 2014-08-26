@@ -3,7 +3,6 @@
 
 class cUrlClass {
 	private $browser = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36';
-	private $cookies_path = '/';
 	private $main_url = 'http://pernatsk.ru/';
 	private $intf = '';
 	protected $ch = null;
@@ -51,9 +50,8 @@ class cUrlClass {
 		curl_setopt($this->ch,CURLOPT_REFERER,$this->main_url);
 		curl_setopt($this->ch,CURLOPT_USERAGENT,$this->browser);
 		curl_setopt($this->ch,CURLOPT_FOLLOWLOCATION,true);
-		curl_setopt($this->ch, CURLOPT_COOKIEJAR, dirname(__FILE__).'/cookie.txt'); // сохранять куки в файл 
-    	curl_setopt($this->ch, CURLOPT_COOKIEFILE,  dirname(__FILE__).'/cookie.txt');
-		//curl_setopt($this->ch,CURLOPT_COOKIE,$this->parseCookiesFile());
+		curl_setopt($this->ch, CURLOPT_COOKIEJAR, dirname(__FILE__).'/cookie.txt');
+		curl_setopt($this->ch, CURLOPT_COOKIEFILE,  dirname(__FILE__).'/cookie.txt');
 		curl_setopt($this->ch,CURLOPT_CONNECTTIMEOUT, 15);
 		if(strlen($this->intf) > 0) {
 			curl_setopt($this->ch,CURLOPT_INTERFACE,$this->intf);
@@ -65,8 +63,6 @@ class cUrlClass {
 	public function sendPostData($url, $data)
 	{
 		$this->checkSettings();
-
-		//$post_data = http_build_query($data);
 
 		if(BOT_DEBUG) {
 			echo "POST: ".$url."\n";
@@ -86,9 +82,8 @@ class cUrlClass {
 		curl_setopt($this->ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($this->ch, CURLOPT_COOKIEJAR, dirname(__FILE__).'/cookie.txt'); // сохранять куки в файл 
-    	curl_setopt($this->ch, CURLOPT_COOKIEFILE,  dirname(__FILE__).'/cookie.txt');
-		//curl_setopt($this->ch,CURLOPT_COOKIE,$this->parseCookiesFile());
+		curl_setopt($this->ch, CURLOPT_COOKIEJAR, dirname(__FILE__).'/cookie.txt');
+		curl_setopt($this->ch, CURLOPT_COOKIEFILE,  dirname(__FILE__).'/cookie.txt');
 		curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 15);
 		if (strlen($this->intf) > 0) {
 		   curl_setopt($this->ch, CURLOPT_INTERFACE, $this->intf);
