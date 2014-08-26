@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 include('config.php');
 include('perBot.php');
 

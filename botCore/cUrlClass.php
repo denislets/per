@@ -2,8 +2,8 @@
 // Curl Class for navigate to sites
 
 class cUrlClass {
-	private $browser = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0';
-	private $cookies_path = '/cookies/cookies.txt';
+	private $browser = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36';
+	private $cookies_path = '/';
 	private $main_url = 'http://pernatsk.ru/';
 	private $intf = '';
 	protected $ch = null;
@@ -51,8 +51,8 @@ class cUrlClass {
 		curl_setopt($this->ch,CURLOPT_REFERER,$this->main_url);
 		curl_setopt($this->ch,CURLOPT_USERAGENT,$this->browser);
 		curl_setopt($this->ch,CURLOPT_FOLLOWLOCATION,true);
-		curl_setopt($this->ch,CURLOPT_COOKIEJAR,realpath('.').$this->cookies_path);
-		curl_setopt($this->ch,CURLOPT_COOKIEFILE,realpath('.').$this->cookies_path);
+		curl_setopt($this->ch, CURLOPT_COOKIEJAR, dirname(__FILE__).'/cookie.txt'); // сохранять куки в файл 
+    	curl_setopt($this->ch, CURLOPT_COOKIEFILE,  dirname(__FILE__).'/cookie.txt');
 		//curl_setopt($this->ch,CURLOPT_COOKIE,$this->parseCookiesFile());
 		curl_setopt($this->ch,CURLOPT_CONNECTTIMEOUT, 15);
 		if(strlen($this->intf) > 0) {
@@ -62,11 +62,11 @@ class cUrlClass {
 		return $tmpPage;
 	}
 
-	public function sendPostData($url,$data)
+	public function sendPostData($url, $data)
 	{
 		$this->checkSettings();
 
-		$post_data = http_build_query($data);
+		//$post_data = http_build_query($data);
 
 		if(BOT_DEBUG) {
 			echo "POST: ".$url."\n";
@@ -75,20 +75,23 @@ class cUrlClass {
 			curl_setopt($this->ch,CURLOPT_HEADER,1);
 		}
 
-		curl_setopt($this->ch,CURL_HTTP_VERSION_1_1,true);
-		curl_setopt($this->ch,CURLOPT_URL,$this->main_url.$url);
-		curl_setopt($this->ch,CURLOPT_RETURNTRANSFER,true);
-		curl_setopt($this->ch,CURLOPT_REFERER,$this->main_url);
-		curl_setopt($this->ch,CURLOPT_USERAGENT,$this->browser);
-		curl_setopt($this->ch,CURLOPT_FOLLOWLOCATION,true);
-		curl_setopt($this->ch,CURLOPT_POST,true);
-		curl_setopt($this->ch,CURLOPT_POSTFIELDS,$post_data);
-		curl_setopt($this->ch,CURLOPT_COOKIEJAR,realpath('.').$this->cookies_path);
-		curl_setopt($this->ch,CURLOPT_COOKIEFILE,realpath('.').$this->cookies_path);
+		//curl_setopt($this->ch,CURL_HTTP_VERSION_1_1,true);
+		curl_setopt($this->ch, CURLOPT_URL, $this->main_url);
+		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($this->ch, CURLOPT_REFERER, $this->main_url);
+		curl_setopt($this->ch, CURLOPT_USERAGENT, $this->browser);
+		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($this->ch, CURLOPT_POST, true);
+		curl_setopt($this->ch, CURLOPT_HEADER, true);
+		curl_setopt($this->ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($this->ch, CURLOPT_COOKIEJAR, dirname(__FILE__).'/cookie.txt'); // сохранять куки в файл 
+    	curl_setopt($this->ch, CURLOPT_COOKIEFILE,  dirname(__FILE__).'/cookie.txt');
 		//curl_setopt($this->ch,CURLOPT_COOKIE,$this->parseCookiesFile());
-		curl_setopt($this->ch,CURLOPT_CONNECTTIMEOUT, 15);
+		curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 15);
 		if (strlen($this->intf) > 0) {
-		   curl_setopt($this->ch,CURLOPT_INTERFACE,$this->intf);
+		   curl_setopt($this->ch, CURLOPT_INTERFACE, $this->intf);
 		}
 /*
 		curl_setopt($this->ch,CURLOPT_HTTPHEADER,array(

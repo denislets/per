@@ -1,6 +1,6 @@
 <?php
 class perBattle extends perUtils {
-	public function getBattleByURL($link = 'world/battle/log/id/411906/r/09996566e4c0c56bf82216f52857fb61') {
+	public function getBattleByURL($link = 'world/battle/log/id/1828174/r/72b035d7ac51a205e23d1d154fcffd0e') {
 		global $html;
 
 		$player1 = array();

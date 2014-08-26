@@ -8,7 +8,6 @@ $m->setLoginData(GAME_USER, GAME_PASS);
 if(!$m->isLoged()) {
 	$m->loginToper();
 }
-
 echo "Getting player war log list.<br>\n";
 $mail = new perMail;
 $battlesList = $mail->getBattlesList();
