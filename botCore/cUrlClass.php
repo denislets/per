@@ -4,6 +4,7 @@
 class cUrlClass {
 	private $browser = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36';
 	private $main_url = 'http://pernatsk.ru/';
+	private $cookies_path = '/cookie.txt';
 	private $intf = '';
 	protected $ch = null;
 	protected $reqInfo = null;
@@ -16,7 +17,7 @@ class cUrlClass {
 		$this->cookies_path = $path;   
 	}
 
-	public function setMainUrl($url) {
+	public function setMainUrl($main_url) {
 		$this->main_url = $url;
 	}
 
@@ -45,7 +46,7 @@ class cUrlClass {
 			curl_setopt($this->ch,CURLOPT_HEADER,1);
 		}
 		
-		curl_setopt($this->ch,CURLOPT_URL,$this->main_url.$url);
+		curl_setopt($this->ch,CURLOPT_URL,$this->main_url);
 		curl_setopt($this->ch,CURLOPT_RETURNTRANSFER,true);
 		curl_setopt($this->ch,CURLOPT_REFERER,$this->main_url);
 		curl_setopt($this->ch,CURLOPT_USERAGENT,$this->browser);
@@ -71,7 +72,7 @@ class cUrlClass {
 			curl_setopt($this->ch,CURLOPT_HEADER,1);
 		}
 
-		//curl_setopt($this->ch,CURL_HTTP_VERSION_1_1,true);
+		curl_setopt($this->ch,CURL_HTTP_VERSION_1_1,true);
 		curl_setopt($this->ch, CURLOPT_URL, $this->main_url);
 		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($this->ch, CURLOPT_REFERER, $this->main_url);
@@ -93,7 +94,6 @@ class cUrlClass {
 			//"Content-Type" => "application/x-www-form-urlencoded",
 		));
 */
-
 		$tmpPage = curl_exec($this->ch);
 		return $tmpPage;
 	}

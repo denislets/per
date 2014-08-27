@@ -1,20 +1,21 @@
 <?php
 class perBot extends perUtils {
-	protected $username = GAME_USER;
-	protected $password = GAME_PASS;
+	protected $username = '';
+	protected $password = '';
 
 	public function setLoginData($username , $password) {
-		$this->username = $username;
-		$this->password = $password;
+		$this->username = GAME_USER;
+		$this->password = GAME_PASS;
 	}
 
 	public function loginToper() { 
 		$wb = new cUrlClass;
-		$inputs = array(
-			'LoginForm%5Bemail%5D:'.$username,
-			'LoginForm%5Bpassword%5D:'.$password,
+		/*$inputs = array(
+			'LoginForm%5Bemail%5D:'.$this->username,
+			'LoginForm%5Bpassword%5D:'.$this->password,
 			'LoginForm%5BrememberMe%5D:0'
-		);
+		);*/
+		$inputs = 'LoginForm%5Bemail%5D='.$this->username.'&LoginForm%5Bpassword%5D='.$this->password.'&LoginForm%5BrememberMe%5D=0';
 		$raw_page = $wb->sendPostData('', $inputs);
 		$wb->close();
 	}
